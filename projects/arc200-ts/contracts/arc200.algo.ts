@@ -1,31 +1,37 @@
 import { Contract } from '@algorandfoundation/tealscript';
 
+// Define the structure for an allowance, representing the amount a spender is allowed to spend on behalf of an owner.
 export type Allowance = {
-  spender: Address;
-  amount: uint256;
+  spender: Address; // The address of the spender.
+  amount: uint256; // The amount the spender is allowed to spend.
 };
 
+// Define the structure for a user, including their balance and allowances.
 export type User = {
-  balance: uint256;
-  allowances: Allowance[];
+  balance: uint256; // The user's token balance.
+  allowances: Allowance[]; // An array of allowances granted by the user.
 };
 
+// Define the main contract class, inheriting from the TealScript Contract class.
 export class arc200 extends Contract {
+  // Define global state keys for the token's name, symbol, decimals, and total supply.
   name = GlobalStateKey<bytes[32]>({ key: 'name' });
   symbol = GlobalStateKey<bytes[8]>({ key: 'symbol' });
   decimals = GlobalStateKey<uint8>({ key: 'decimals' });
   totalSupply = GlobalStateKey<uint256>({ key: 'totalSupply' });
+  // Define a BoxMap to store user data, using the user's address as the key.
   users = BoxMap<Address, User>({ dynamicSize: true });
 
+  // Define event loggers for transfer and approval events.
   arc200_Transfer = new EventLogger<{ from: Address; to: Address; value: uint256 }>();
   arc200_Approval = new EventLogger<{ owner: Address; spender: Address; value: uint256 }>();
 
   /**
    * Contructor which initializes name, symbol, decimals and totalSupply of the token
    *
-   * @param name
-   * @param symbol
-   * @param decimals
+   * @param name - Name of the token.
+   * @param symbol - Symbol of the token.
+   * @param decimals - Decimals of the token.
    * @returns void
    */
   createApplication(name: bytes[32], symbol: bytes[8], decimals: uint8): void {
@@ -74,7 +80,7 @@ export class arc200 extends Contract {
   /**
    * Returns the current balance of the owner of the token
    *
-   * @param owner
+   * @param owner - Address of the token owner.
    * @returns current balance of the owner of the token
    */
   arc200_balanceOf(owner: Address): uint256 {
@@ -123,6 +129,13 @@ export class arc200 extends Contract {
     return true;
   }
 
+  /**
+   * Approves a spender to spend tokens on behalf of the owner.
+   *
+   * @param spender - The address of the spender to be approved.
+   * @param value - The amount of tokens the spender is allowed to spend.
+   * @returns True if the approval was successful.
+   */
   arc200_approve(spender: Address, value: uint256): boolean {
     assert(spender != globals.zeroAddress, 'Cannot Give ALlowance to Zero Address');
     const check = this.checkAllowanceAvailable(this.txn.sender, spender);
@@ -135,6 +148,13 @@ export class arc200 extends Contract {
     return true;
   }
 
+  /**
+   * Returns the amount of tokens that a spender is allowed to spend on behalf of an owner.
+   *
+   * @param owner - The address of the token owner.
+   * @param spender - The address of the spender.
+   * @returns The amount of tokens the spender is allowed to spend.
+   */
   arc200_allowance(owner: Address, spender: Address): uint256 {
     const check = this.checkAllowanceAvailable(this.txn.sender, spender);
     assert(check[0], 'Allowance Not Available');
@@ -143,6 +163,13 @@ export class arc200 extends Contract {
     return allowance.amount;
   }
 
+  /**
+   * Mints new tokens and assigns them to an account.
+   *
+   * @param account - The address of the account to mint tokens to.
+   * @param value - The amount of tokens to mint.
+   * @returns True if the minting was successful.
+   */
   arc200_mint(account: Address, value: uint256): boolean {
     if (!this.users(globals.zeroAddress).exists) {
       this.users(globals.zeroAddress).value = { balance: 0 as uint256, allowances: [] };
@@ -153,6 +180,13 @@ export class arc200 extends Contract {
     return true;
   }
 
+  /**
+   * Burns tokens from an account, reducing the total supply.
+   *
+   * @param account - The address of the account to burn tokens from.
+   * @param value - The amount of tokens to burn.
+   * @returns True if the burning was successful.
+   */
   arc200_burn(account: Address, value: uint256): boolean {
     assert(this.txn.sender == this.app.creator, 'Only Admin Can Burn');
     assert(account != globals.zeroAddress, 'Cannot Burn from Zero Address');
@@ -162,18 +196,44 @@ export class arc200 extends Contract {
     return true;
   }
 
+  /**
+   * Checks if a user exists in the user's BoxMap.
+   *
+   * @param user - The address of the user to check.
+   * @returns True if the user exists, false otherwise.
+   */
   private userExists(user: Address): boolean {
     return this.users(user).exists;
   }
 
+  /**
+   * Checks if a user has enough balance.
+   *
+   * @param user - The address of the user to check.
+   * @param balance - The amount to check against the user's balance.
+   * @returns True if the user has enough balance, false otherwise.
+   */
   private ensureBalance(user: Address, balance: uint256): boolean {
     return this.users(user).value.balance >= balance;
   }
 
+  /**
+   * Creates a new user with an initial balance.
+   *
+   * @param user - The address of the new user.
+   * @param balance - The initial balance of the new user.
+   */
   private createNewUser(user: Address, balance: uint256): void {
     this.users(user).value = { balance: balance, allowances: [] };
   }
 
+  /**
+   * Internal function to transfer tokens from one address to another.
+   *
+   * @param from - The address to transfer tokens from.
+   * @param to - The address to transfer tokens to.
+   * @param value - The amount of tokens to transfer.
+   */
   private _transfer(from: Address, to: Address, value: uint256): void {
     assert(!(from == globals.zeroAddress && to == globals.zeroAddress), 'Both Address Should not be zero');
     if (from == globals.zeroAddress) {
@@ -199,6 +259,13 @@ export class arc200 extends Contract {
     this.arc200_Transfer.log({ from: from, to: to, value: value });
   }
 
+  /**
+   * Checks if an allowance is available for a given user and spender.
+   *
+   * @param user - The address of the token owner.
+   * @param spender - The address of the spender.
+   * @returns A tuple containing a boolean indicating if the allowance is available, and the index of the allowance if it exists.
+   */
   private checkAllowanceAvailable(user: Address, spender: Address): [boolean, uint64] {
     const allowances = this.users(user).value.allowances;
     const allowancesLength = (this.users(user).size - 36) / 64;
@@ -216,11 +283,25 @@ export class arc200 extends Contract {
     return [allowanceFound, allowanceIndex];
   }
 
+  /**
+   * Updates the balance of an existing allowance.
+   *
+   * @param user - The address of the token owner.
+   * @param balance - The new balance of the allowance.
+   * @param index - The index of the allowance to update.
+   */
   private updateAllowance(user: Address, balance: uint256, index: uint64): void {
     const allowances = this.users(user).value.allowances;
     allowances[index].amount = balance;
   }
 
+  /**
+   * Adds a new allowance for a spender.
+   *
+   * @param user - The address of the token owner.
+   * @param spender - The address of the spender.
+   * @param balance - The amount of tokens the spender is allowed to spend.
+   */
   private addAllowance(user: Address, spender: Address, balance: uint256): void {
     const allowances = this.users(user).value.allowances;
     const newAllowance: Allowance[] = [];
@@ -235,6 +316,13 @@ export class arc200 extends Contract {
     this.users(user).value.allowances = newAllowance;
   }
 
+  /**
+   * Retrieves an allowance for a given user and index.
+   *
+   * @param user - The address of the token owner.
+   * @param index - The index of the allowance to retrieve.
+   * @returns The allowance object.
+   */
   private getAllowance(user: Address, index: uint64): Allowance {
     const addressOffset = index * 64 + 36;
     const valueOffset = addressOffset + 32;
