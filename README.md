@@ -190,7 +190,7 @@ Created app 1005 from creator UOVAGV7MFHVBQ52RFFQG2OZ2XGN42JIDCCDMNOUKWZ4MIBRCSD
 
 The ARC200 smart contract implements the following methods:
 
-- `deploy`: Deploys the contract and initializes token parameters.
+- `createApplication`: Deploys the contract and initializes token parameters.
 - `mint`: Mints new tokens to a specified account.
 - `transfer`: Transfers tokens from one account to another.
 - `transferFrom`: Transfers tokens from one account to another, with allowance.
