@@ -1,0 +1,245 @@
+{
+  "name": "arc200",
+  "desc": "",
+  "methods": [
+    {
+      "name": "createApplication",
+      "desc": "Contructor which initializes name, symbol, decimals and totalSupply of the token",
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "decimals",
+          "type": "uint8"
+        }
+      ],
+      "returns": {
+        "type": "void",
+        "desc": "void"
+      }
+    },
+    {
+      "name": "arc200_name",
+      "desc": "Returns the symbol of the token",
+      "args": [],
+      "returns": {
+        "type": "string",
+        "desc": "symbol of the token"
+      }
+    },
+    {
+      "name": "arc200_symbol",
+      "desc": "Returns the decimals of the token",
+      "args": [],
+      "returns": {
+        "type": "string",
+        "desc": "decimals of the token"
+      }
+    },
+    {
+      "name": "arc200_decimals",
+      "desc": "Returns the decimals of the token",
+      "args": [],
+      "returns": {
+        "type": "uint8",
+        "desc": "decimals of the token"
+      }
+    },
+    {
+      "name": "arc200_totalSupply",
+      "desc": "Returns the total supply of the token",
+      "args": [],
+      "returns": {
+        "type": "uint256",
+        "desc": "total supply of the token"
+      }
+    },
+    {
+      "name": "arc200_balanceOf",
+      "desc": "Returns the current balance of the owner of the token",
+      "args": [
+        {
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "returns": {
+        "type": "uint256",
+        "desc": "current balance of the owner of the token"
+      }
+    },
+    {
+      "name": "arc200_transfer",
+      "desc": "Transfers tokens",
+      "args": [
+        {
+          "name": "to",
+          "type": "address",
+          "desc": "The destination of the transfer"
+        },
+        {
+          "name": "value",
+          "type": "uint256",
+          "desc": "Amount of tokens to transfer"
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "desc": "Status whether transfer is success or not"
+      }
+    },
+    {
+      "name": "arc200_transferFrom",
+      "desc": "Transfers tokens from source to destination as approved spenderTransfers tokens from source to destination as approved spender",
+      "args": [
+        {
+          "name": "from",
+          "type": "address",
+          "desc": "The source  of the transfer"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "desc": "The destination of the transfer"
+        },
+        {
+          "name": "value",
+          "type": "uint256",
+          "desc": "Amount of tokens to transfer"
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "desc": "Status whether transfer is success or not"
+      }
+    },
+    {
+      "name": "arc200_approve",
+      "args": [
+        {
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      },
+      "events": [
+        {
+          "name": "arc200_Approval",
+          "args": [
+            {
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "name": "arc200_allowance",
+      "args": [
+        {
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address"
+        }
+      ],
+      "returns": {
+        "type": "uint256"
+      }
+    },
+    {
+      "name": "arc200_mint",
+      "args": [
+        {
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "arc200_burn",
+      "args": [
+        {
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "arc200_Transfer",
+      "args": [
+        {
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "desc": ""
+    },
+    {
+      "name": "arc200_Approval",
+      "args": [
+        {
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "desc": ""
+    }
+  ]
+}
